@@ -1,0 +1,78 @@
+<html>
+
+<head>
+	<title>V1-T1</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="d3.v4.js"></script>
+	<style>
+		g {
+			display: block;
+		}
+
+		.sqr {
+			border: black 1px solid;
+			position: relative;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			height: 50px;
+			width: 50px;
+			transition: all 1s;
+			cursor: pointer;
+		}
+
+		.sqr:hover {
+			transform: scale(1.8);
+		}
+	</style>
+</head>
+
+<body>
+	<div id="grid"></div>
+	<script>
+		function gridData() {
+			var data = new Array();
+			var xpos = 1;
+			var ypos = 1;
+			var width = 50;
+			var height = 50;
+			var click = 0;
+
+			for (var row = 0; row < 10; row++) {
+				data.push(new Array());
+
+				for (var column = 0; column < 10; column++) {
+					data[row].push({
+						rowNumber: row
+					})
+				}
+			}
+			return data;
+		}
+
+		var gridData = gridData();
+
+
+		var grid = d3.select("#grid")
+			.append("div")
+			.attr("width", "510px")
+			.attr("height", "510px");
+
+		var row = grid.selectAll(".row")
+			.data(gridData)
+			.enter().append("g")
+			.attr("class", "row");
+
+		var column = row.selectAll(".sqr")
+			.data(function (d) { return d; })
+			.enter().append("div")
+			.attr("class", "sqr")
+			.attr("width", function (d) { return d.width; })
+			.attr("height", function (d) { return d.height; })
+			.text(function (d, i) { return d.rowNumber + "" + i; })
+
+	</script>
+
+</body>
+
+</html>

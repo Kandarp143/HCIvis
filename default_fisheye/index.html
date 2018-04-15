@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Default fisheye</title>
+    <style>
+        .background {
+            fill: none;
+            pointer-events: all;
+        }
+
+        #chart2 {
+            width: 960px;
+            height: 180px;
+            border: solid 1px #ccc;
+        }
+
+        #chart2 path {
+            fill: none;
+            stroke: #333;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #fff;
+            shape-rendering: crispEdges;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="chart2">
+</body>
+<script src="d3/d3.v2.min.js" charset="utf-8"></script>
+<script src="d3/fisheye.js"></script>
+<script>
+
+    (function chart2() {
+        var width = 960,
+            height = 180,
+            xStepsBig = d3.range(10, width, 16),
+            yStepsBig = d3.range(10, height, 16),
+            xStepsSmall = d3.range(0, width + 6, 6),
+            yStepsSmall = d3.range(0, height + 6, 6);
+
+        var fisheye = d3.fisheye.circular()
+            .focus([360, 90])
+            .radius(100);
+
+        var line = d3.svg.line();
+
+        var svg = d3.select("#chart2").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(-.5,-.5)");
+
+        svg.append("rect")
+            .attr("class", "background")
+            .attr("width", width)
+            .attr("height", height);
+
+        svg.selectAll(".x")
+            .data(xStepsBig)
+            .enter().append("path")
+            .attr("class", "x")
+            .datum(function (x) {
+                return yStepsSmall.map(function (y) {
+                    return [x, y];
+                });
+            });
+
+        svg.selectAll(".y")
+            .data(yStepsBig)
+            .enter().append("path")
+            .attr("class", "y")
+            .datum(function (y) {
+                return xStepsSmall.map(function (x) {
+                    return [x, y];
+                });
+            });
+
+        var path = svg.selectAll("path")
+            .attr("d", fishline);
+
+        svg.on("mousemove", function () {
+            fisheye.focus(d3.mouse(this));
+            path.attr("d", fishline);
+        });
+
+        function fishline(d) {
+            return line(d.map(function (d) {
+                d = fisheye({ x: d[0], y: d[1] });
+                return [d.x, d.y];
+            }));
+        }
+    })();
+
+</script>
+
+</html>
